@@ -1,13 +1,11 @@
 import { NgModule } from "@angular/core";
 import { Routes } from "@angular/router";
 import { NativeScriptRouterModule } from "@nativescript/angular";
-import { ShearerModule } from "./shearer/shearer.module.tns";
-import { ShearerComponent } from "./shearer/components/shearer/shearer.component";
+import { OperatorComponent } from './longwall/component/operator/operator.component';
 
 const routes: Routes = [
-    { path: "", redirectTo: "/shearer", pathMatch: "full" },
-    { path: "shearer", component: ShearerComponent },
-    // { path: "item/:id", component: ItemDetailComponent }
+    { path: "", redirectTo: "/operator", pathMatch: "full" },
+    { path: "operator", component: OperatorComponent},
 ];
 
 @NgModule({

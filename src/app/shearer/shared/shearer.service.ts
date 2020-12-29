@@ -5,16 +5,13 @@ import { Subject, BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class ShearerService {
+  /*this is longwall operator service which gets the information from the shearer,
+  which in this case, we will mock up the shearer */
+
   public shearerLocationSource = new BehaviorSubject<number>(0);
   public shearerLocation$ = this.shearerLocationSource.asObservable();
 
   constructor() {
-    // for (var i = 0; i < 100; ++i) {
-    //   setInterval(() => {
-    //     this.shearerLocationSource.next(i);
-    //   }, 3000)
-    //   // this.shearerLocationSource.next(i);
-    // }
     var count = 1;
     var timer = setInterval(() => {
       this.shearerLocationSource.next(count);

@@ -3,7 +3,7 @@ import { NativeScriptModule } from "@nativescript/angular";
 
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
-import { ShearerModule } from "./shearer/shearer.module.tns";
+import { LongwallModule } from "./longwall/longwall.module.tns"
 
 @NgModule({
     bootstrap: [
@@ -12,7 +12,7 @@ import { ShearerModule } from "./shearer/shearer.module.tns";
     imports: [
         NativeScriptModule,
         AppRoutingModule,
-        ShearerModule,
+        LongwallModule,
     ],
     declarations: [
         AppComponent,

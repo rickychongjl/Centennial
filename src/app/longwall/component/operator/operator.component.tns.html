@@ -1,1 +1,6 @@
-<Button text="operator works!" class="btn btn-primary"></Button>
+<RadCartesianChart tkExampleTitle tkToggleNavButton>
+    <CategoricalAxis tkCartesianHorizontalAxis></CategoricalAxis>
+    <LinearAxis tkCartesianVerticalAxis></LinearAxis>
+    <LineSeries tkCartesianSeries [items]="shearerLocationArray" categoryProperty="time" valueProperty="position">
+    </LineSeries>
+</RadCartesianChart>
