@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ShearerComponent } from './shearer.component';
+import { OperatorComponent } from './operator.component';
 
-describe('ShearerComponent', () => {
-  let component: ShearerComponent;
-  let fixture: ComponentFixture<ShearerComponent>;
+describe('OperatorComponent', () => {
+  let component: OperatorComponent;
+  let fixture: ComponentFixture<OperatorComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ShearerComponent ]
+      declarations: [ OperatorComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ShearerComponent);
+    fixture = TestBed.createComponent(OperatorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
