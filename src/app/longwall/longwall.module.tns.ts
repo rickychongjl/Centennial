@@ -3,7 +3,6 @@ import { NativeScriptCommonModule } from '@nativescript/angular';
 import { OperatorComponent } from './component/operator/operator.component';
 import { NativeScriptUIChartModule } from "nativescript-ui-chart/angular";
 
-
 @NgModule({
   declarations: [OperatorComponent],
   imports: [

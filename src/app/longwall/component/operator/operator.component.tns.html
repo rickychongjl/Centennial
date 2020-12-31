@@ -1,6 +1,6 @@
 <RadCartesianChart tkExampleTitle tkToggleNavButton>
-    <CategoricalAxis tkCartesianHorizontalAxis></CategoricalAxis>
-    <LinearAxis tkCartesianVerticalAxis></LinearAxis>
-    <LineSeries tkCartesianSeries [items]="shearerLocationArray" categoryProperty="time" valueProperty="position">
-    </LineSeries>
+    <CategoricalAxis tkCartesianHorizontalAxis allowPan="false" allowZoom="true"></CategoricalAxis>
+    <LinearAxis tkCartesianVerticalAxis allowPan="false" allowZoom="true"></LinearAxis>
+    <LineSeries tkCartesianSeries [items]="shearerLocationArray" categoryProperty="time" valueProperty="position"></LineSeries>
+    <Trackball  tkCartesianTrackball></Trackball>
 </RadCartesianChart>

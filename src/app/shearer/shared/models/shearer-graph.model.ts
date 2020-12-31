@@ -1,11 +1,15 @@
+import { ShearerItem } from "./shearer-item.model";
+
 export class ShearerGraph {
     public position: number;
-    public time: number;
+    public time: string;
     public stale: boolean;
-
-    constructor(position: number){
-        this.position = position;
-        this.time = position;
-        this.stale = false;
+    public dateObject: Date;
+    
+    constructor(shearerLocation: number, dateObject: Date, time: string, stale: boolean){
+        this.position = shearerLocation;
+        this.time = time;
+        this.dateObject = dateObject;
+        this.stale = stale;
     }
 }
