@@ -15,7 +15,7 @@ export class ShearerService {
 
   private cycle = 100;
 
-  private position = 1;
+  private position = 0;
   private outageDuration = 3;
   private outagesPositionArray = this.randomArrayGenerator(this.cycle,50);
   private activeOutagesArray: Array<ShearerItem> = new Array<ShearerItem>();
