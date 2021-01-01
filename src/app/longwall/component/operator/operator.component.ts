@@ -17,7 +17,6 @@ export class OperatorComponent implements OnInit {
 
   ngOnInit(): void {
     this.shearerService.shearerLocation$.subscribe(location => {
-      console.log("location received is " + location.shearerLocation);
       this.date = new Date();
       var input_time = location.dateObject.getHours() + ":" + location.dateObject.getMinutes() + ":" + location.dateObject.getSeconds();
       var stale = false;
@@ -33,21 +32,30 @@ export class OperatorComponent implements OnInit {
       //received packet not in order
       if(count > 1){
         //temporarily set the not received points
-        console.log("receiving position is " + location.shearerLocation + " and last item array position is " + lastItemInArray.position);
+        // console.log("receiving position is " + location.shearerLocation + " and last item array position is " + lastItemInArray.position);
         for (var i = lastItemInArray.position; i < location.shearerLocation-1; i++){
           this.shearer = new ShearerGraph(i, null, null, true);
-          console.log("setting temp in index " + i);
+          // console.log("setting temp in index " + i);
           this.shearerLocationArray.setItem(i, this.shearer);
         }
       }
       //the delayed packet has arrived and we need to go back and set it subsequently
       if(count < 0){
-        // console.log("Packet is resolved " + location);
+        // console.log("Packet is resolved " + location.shearerLocation);
         var temp = this.shearerLocationArray.getItem(location.shearerLocation - 1);
         temp.position = location.shearerLocation;
         temp.dateObject = location.dateObject;
         temp.time = input_time;
         temp.stale = true;
+        temp.stalePosition = temp.position;
+
+        //set the stale points
+        for(var i=location.shearerLocation-1; i<this.shearerLocationArray.length; i++){
+          if (!this.shearerLocationArray.getItem(i).stale){
+            this.shearerLocationArray.getItem(i).stalePosition = this.shearerLocationArray.getItem(i).position;
+            break;
+          }
+        }
         this.shearerLocationArray.setItem(location.shearerLocation - 1, temp);
       }else{
         this.shearer = new ShearerGraph(location.shearerLocation, location.dateObject, input_time, stale);

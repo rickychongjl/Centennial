@@ -2,5 +2,6 @@
     <CategoricalAxis tkCartesianHorizontalAxis allowPan="false" allowZoom="true"></CategoricalAxis>
     <LinearAxis tkCartesianVerticalAxis allowPan="false" allowZoom="true"></LinearAxis>
     <LineSeries tkCartesianSeries [items]="shearerLocationArray" categoryProperty="time" valueProperty="position"></LineSeries>
-    <Trackball  tkCartesianTrackball></Trackball>
+    <LineSeries tkCartesianSeries [items]="shearerLocationArray" categoryProperty="time" valueProperty="stalePosition"></LineSeries>
+    <Trackball tkCartesianTrackball ></Trackball>
 </RadCartesianChart>

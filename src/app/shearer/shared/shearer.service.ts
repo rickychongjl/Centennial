@@ -24,10 +24,10 @@ export class ShearerService {
   and then we will have a temp to hold the location we want to hold on to. 
   */
   constructor() {
-    // for(var i=0; i<this.outagesPositionArray.length; i++){
-    //   console.log(this.outagesPositionArray[i]);
-    // }
-    // console.log("__________");
+    for(var i=0; i<this.outagesPositionArray.length; i++){
+      console.log(this.outagesPositionArray[i]);
+    }
+    console.log("__________");
     var timer = setInterval(() => {
       if (this.position > this.cycle){
         clearInterval(timer);
@@ -59,6 +59,6 @@ export class ShearerService {
       randomOutageArray.push(randNumber);
     }
     
-    return randomOutageArray;
+    return randomOutageArray.sort();
   }
 }
