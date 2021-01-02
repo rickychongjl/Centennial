@@ -13,33 +13,35 @@ export class ShearerService {
   public shearerLocation$ = this.shearerLocationSource.asObservable();
   private shearerItem: ShearerItem;
 
+  private index = 0;
   public cycle = 10;
   public mainGate = 0;
   public tailGate = 10;
 
   private position = 0;
   private outageDuration = 3;
-  private outagesPositionArray = this.randomArrayGenerator(this.mainGate,1);
+  private outagesPositionArray = this.randomArrayGenerator(this.cycle,1);
   private activeOutagesArray: Array<ShearerItem> = new Array<ShearerItem>();
 
-  private count  = 0;
   private previousGate: string = "";
   /*we need to generate a random number generator to represent the position which we will mock data outage
   and then we will have a temp to hold the location we want to hold on to. 
   */
   constructor() {
-    // for(var i=0; i<this.outagesPositionArray.length; i++){
-    //   console.log(this.outagesPositionArray[i]);
-    // }
-    // console.log("__________");
+    for(var i=0; i<this.outagesPositionArray.length; i++){
+      console.log(this.outagesPositionArray[i]);
+    }
+    console.log("__________");
     var timer = setInterval(() => {
 
       if(this.position == this.tailGate){
         this.previousGate = "tailGate";
+        this.outagesPositionArray = this.randomArrayGenerator(this.cycle, 1);
       }else if(this.position == this.mainGate){
+        this.outagesPositionArray = this.randomArrayGenerator(this.cycle, 1);
         this.previousGate = "mainGate";
       }
-      this.shearerItem = new ShearerItem(this.position);
+      this.shearerItem = new ShearerItem(this.position, this.index);
 
       if (this.activeOutagesArray.length > 0 && this.activeOutagesArray[0].remainingOutageDuration === 0) {
 
@@ -71,6 +73,7 @@ export class ShearerService {
             this.activeOutagesArray[i].remainingOutageDuration--;
           }
         }
+        this.index++;
       }
     }, 1000);
   }
