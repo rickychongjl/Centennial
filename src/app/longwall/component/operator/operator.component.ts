@@ -13,12 +13,11 @@ export class OperatorComponent implements OnInit {
 
   public shearer: ShearerGraph;
   public date: Date = new Date();
+
   constructor(private shearerService: ShearerService) { }
 
   ngOnInit(): void {
     this.shearerService.shearerLocation$.subscribe(location => {
-
-      console.log("location received is " + location.shearerLocation + " and global index is " + location.globalIndex);
       this.date = new Date();
       var input_time = location.dateObject.getHours() + ":" + location.dateObject.getMinutes() + ":" + location.dateObject.getSeconds();
       var stale = false;
@@ -36,7 +35,7 @@ export class OperatorComponent implements OnInit {
         //temporarily set the not received points
         // console.log("receiving position is " + location.shearerLocation + " and last item array position is " + lastItemInArray.position);
         for (var i = lastItemInArray.globalIndex + 1; i < location.globalIndex; i++){
-          this.shearer = new ShearerGraph(i, null, null, true, i);
+          this.shearer = new ShearerGraph(0, null, null, true, i);
           // console.log("setting temp in index " + i);
           this.shearerLocationArray.setItem(i, this.shearer);
         }
@@ -65,5 +64,9 @@ export class OperatorComponent implements OnInit {
      
       }
     });
+  }
+
+  public stopShearer(){
+    this.shearerService.stopShearerSignalSource.next(true);
   }
 }

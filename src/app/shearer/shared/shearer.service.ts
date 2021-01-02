@@ -11,16 +11,23 @@ export class ShearerService {
 
   public shearerLocationSource = new Subject<ShearerItem>();
   public shearerLocation$ = this.shearerLocationSource.asObservable();
+
+  public stopShearerSignalSource = new Subject<boolean>();
+  public stopShearerSignal$ = this.stopShearerSignalSource.asObservable();
+
   private shearerItem: ShearerItem;
 
   private index = 0;
   public cycle = 10;
   public mainGate = 0;
-  public tailGate = 10;
+  public tailGate = this.cycle;
 
+  public randomMaxRange = this.cycle;
+  public numberOfOutages = 1;
+  
   private position = 0;
   private outageDuration = 3;
-  private outagesPositionArray = this.randomArrayGenerator(this.cycle,1);
+  private outagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfOutages);
   private activeOutagesArray: Array<ShearerItem> = new Array<ShearerItem>();
 
   private previousGate: string = "";
@@ -28,17 +35,20 @@ export class ShearerService {
   and then we will have a temp to hold the location we want to hold on to. 
   */
   constructor() {
-    for(var i=0; i<this.outagesPositionArray.length; i++){
-      console.log(this.outagesPositionArray[i]);
-    }
-    console.log("__________");
+    // for(var i=0; i<this.outagesPositionArray.length; i++){
+    //   console.log(this.outagesPositionArray[i]);
+    // }
+    // console.log("__________");
     var timer = setInterval(() => {
-
+      this.stopShearerSignal$.subscribe(stop => {
+        if(stop)
+          clearInterval(timer);
+      });
       if(this.position == this.tailGate){
         this.previousGate = "tailGate";
-        this.outagesPositionArray = this.randomArrayGenerator(this.cycle, 1);
+        this.outagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfOutages);
       }else if(this.position == this.mainGate){
-        this.outagesPositionArray = this.randomArrayGenerator(this.cycle, 1);
+        this.outagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfOutages);
         this.previousGate = "mainGate";
       }
       this.shearerItem = new ShearerItem(this.position, this.index);
@@ -62,7 +72,7 @@ export class ShearerService {
           this.shearerLocationSource.next(this.shearerItem);
           
         }
-        //when it reaches main gate, then we cant ++ anymore
+
         if(this.previousGate === "tailGate"){
           this.position--;
         }else{
