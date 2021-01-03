@@ -1,15 +1,16 @@
 {
   "compilerOptions": {
-      "module": "esnext",
-      "target": "es2017",
-      "moduleResolution": "node",
+      "module": "commonjs",
+      "target": "es5",
       "experimentalDecorators": true,
       "emitDecoratorMetadata": true,
       "noEmitHelpers": true,
       "noEmitOnError": true,
       "skipLibCheck": true,
       "lib": [
-        "es2018", "es2017", "dom", "es6"
+          "es2017",
+          "dom",
+          "es6"
       ],
       "baseUrl": ".",
       "paths": {
@@ -19,12 +20,10 @@
       }
   },
   "include": [
-    "src/tests/**/*.ts",
-    "src/**/*.ios.ts",
-    "src/**/*.android.ts"
+    "references.d.ts",
+    "src/tests/**/*.ts"
   ],
   "files": [
-    "./references.d.ts",
     "./src/main.ts"
   ],
   "exclude": [
