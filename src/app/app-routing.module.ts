@@ -5,7 +5,7 @@ import { OperatorComponent } from './longwall/component/operator/operator.compon
 
 const routes: Routes = [
     { path: "", redirectTo: "/operator", pathMatch: "full" },
-    { path: "operator", component: OperatorComponent},
+    { path: "operator", component: OperatorComponent },
 ];
 
 @NgModule({

@@ -24,7 +24,7 @@ export class ShearerService {
 
   public randomMaxRange = this.cycle;
   public numberOfOutages = 1;
-  
+
   private position = 0;
   private outageDuration = 3;
   private outagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfOutages);
@@ -41,13 +41,13 @@ export class ShearerService {
     // console.log("__________");
     var timer = setInterval(() => {
       this.stopShearerSignal$.subscribe(stop => {
-        if(stop)
+        if (stop)
           clearInterval(timer);
       });
-      if(this.position == this.tailGate){
+      if (this.position == this.tailGate) {
         this.previousGate = "tailGate";
         this.outagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfOutages);
-      }else if(this.position == this.mainGate){
+      } else if (this.position == this.mainGate) {
         this.outagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfOutages);
         this.previousGate = "mainGate";
       }
@@ -59,7 +59,7 @@ export class ShearerService {
         this.shearerLocationSource.next(this.activeOutagesArray[0]);
         this.activeOutagesArray.shift();
 
-      }else{
+      } else {
 
         if (this.outagesPositionArray.includes(this.position)) {
           //we set the outageDuration
@@ -70,16 +70,16 @@ export class ShearerService {
 
           // console.log("Sending " + this.shearerItem.shearerLocation);
           this.shearerLocationSource.next(this.shearerItem);
-          
+
         }
 
-        if(this.previousGate === "tailGate"){
+        if (this.previousGate === "tailGate") {
           this.position--;
-        }else{
+        } else {
           this.position++;
         }
-        if (this.activeOutagesArray.length > 0){
-          for(var i=0; i<this.activeOutagesArray.length; i++){
+        if (this.activeOutagesArray.length > 0) {
+          for (var i = 0; i < this.activeOutagesArray.length; i++) {
             this.activeOutagesArray[i].remainingOutageDuration--;
           }
         }
@@ -88,16 +88,16 @@ export class ShearerService {
     }, 1000);
   }
 
-  private randomArrayGenerator(maxRange: number, numberOfOutage: number): Array<number>{
+  private randomArrayGenerator(maxRange: number, numberOfOutage: number): Array<number> {
     var randomOutageArray: Array<number> = new Array<number>();
-    for(var i=0; i<numberOfOutage; i++){
+    for (var i = 0; i < numberOfOutage; i++) {
       var randNumber = Math.floor(Math.random() * maxRange) + 2;
-      while(randomOutageArray.includes(randNumber)){
+      while (randomOutageArray.includes(randNumber)) {
         randNumber = Math.floor(Math.random() * maxRange) + 2;
       }
       randomOutageArray.push(randNumber);
     }
-    
+
     return randomOutageArray.sort();
   }
 }
