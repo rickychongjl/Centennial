@@ -1,1 +1,6 @@
 /* Add mobile styles for the component here.  */
+.warning{
+    color: red;
+    font-size: medium;
+    font-weight: 100;
+}

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { ShearerItem } from './../../shearer/shared/models/shearer-item.model';
+import { ElectricityPriceInspectorService } from '../../electricity-price-inspector/electricity-price-inspector.service';
 
 @Injectable({
   providedIn: 'root'
@@ -28,43 +29,82 @@ export class ShearerService {
   private activeOutagesArray: Array<ShearerItem> = new Array<ShearerItem>();
 
   private previousGate: string = "";
+  private stopGate: string = "";
+  private reachStopGate: boolean = false;
 
-  constructor() {
+  private priceSpike = false;
+  private timerStarted = false;
+
+  constructor(private ElectricityPriceInspectorService: ElectricityPriceInspectorService) {
     var timer = setInterval(() => {
       this.stopShearerSignal$.subscribe(stop => {
         if (stop)
           clearInterval(timer);
       });
-      if (this.position == this.tailGate) {
-        this.previousGate = "tailGate";
-        this.outagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfOutages);
-      } else if (this.position == this.mainGate) {
-        this.outagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfOutages);
-        this.previousGate = "mainGate";
+      this.ElectricityPriceInspectorService.electricitySpike$.subscribe(spike => {
+        if(spike){
+          this.stopGate = this.nearestGate();
+          if (this.stopGate === "tailGate"){
+            this.previousGate = "mainGate";
+          }else{
+            this.previousGate = "tailGate";
+          }
+          this.priceSpike = true;
+          console.log("in spike now, the nearest gate is " + this.stopGate);
+        }else{
+          console.log("out of spike now ");
+          this.priceSpike = false;
+        }
+      });
+      if (!this.priceSpike && !this.timerStarted){
+        this.timerStarted = true;
+        //start_timer for 2 mins
+        setTimeout(() => {
+          this.timerStarted = false;
+          this.reachStopGate = false;
+          this.stopGate = "";
+        }, 120000);
       }
-      this.shearerItem = new ShearerItem(this.position, this.index);
+      if (!this.timerStarted || !this.reachStopGate){
+        if (this.position == this.tailGate) {
+          this.previousGate = "tailGate";
+          this.outagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfOutages);
+        } else if (this.position == this.mainGate) {
+          this.outagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfOutages);
+          this.previousGate = "mainGate";
+        }
+        if(!this.reachStopGate){
+          this.shearerItem = new ShearerItem(this.position, this.index);
 
-      if (this.activeOutagesArray.length > 0 && this.activeOutagesArray[0].remainingOutageDuration === 0) {
-        this.shearerLocationSource.next(this.activeOutagesArray[0]);
-        this.activeOutagesArray.shift();
-      } else {
-        if (this.outagesPositionArray.includes(this.position)) {
-          this.shearerItem.remainingOutageDuration = this.outageDuration;
-          this.activeOutagesArray.push(this.shearerItem);
-        } else {
-          this.shearerLocationSource.next(this.shearerItem);
-        }
-        if (this.previousGate === "tailGate") {
-          this.position--;
-        } else {
-          this.position++;
-        }
-        if (this.activeOutagesArray.length > 0) {
-          for (var i = 0; i < this.activeOutagesArray.length; i++) {
-            this.activeOutagesArray[i].remainingOutageDuration--;
+          if (this.activeOutagesArray.length > 0 && this.activeOutagesArray[0].remainingOutageDuration === 0) {
+            this.shearerLocationSource.next(this.activeOutagesArray[0]);
+            this.activeOutagesArray.shift();
+          } else {
+            if (this.outagesPositionArray.includes(this.position)) {
+              this.shearerItem.remainingOutageDuration = this.outageDuration;
+              this.activeOutagesArray.push(this.shearerItem);
+            } else {
+              this.shearerLocationSource.next(this.shearerItem);
+            }
+            if (this.previousGate === "tailGate") {
+              this.position--;
+            } else {
+              this.position++;
+            }
+            if (this.activeOutagesArray.length > 0) {
+              for (var i = 0; i < this.activeOutagesArray.length; i++) {
+                this.activeOutagesArray[i].remainingOutageDuration--;
+              }
+            }
+            this.index++;
+            if (this.previousGate === this.stopGate) {
+              this.reachStopGate = true;
+              this.stopGate = "";
+            } else {
+              this.reachStopGate = false;
+            }
           }
         }
-        this.index++;
       }
     }, 1000);
   }
@@ -79,6 +119,16 @@ export class ShearerService {
       randomOutageArray.push(randNumber);
     }
 
-    return randomOutageArray.sort();
+    return randomOutageArray;
+  }
+
+  private nearestGate(): string{
+    var mainGateDiff = Math.abs(this.position - this.mainGate);
+    var tailGateDiff = Math.abs(this.position - this.tailGate);
+    if( mainGateDiff > tailGateDiff ){
+      return "tailGate";
+    }else{
+      return "mainGate";
+    }
   }
 }
