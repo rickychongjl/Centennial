@@ -2,7 +2,7 @@
     <Button text="Tap me to stop shearer" (tap)="stopShearer()"></Button>
     <GridLayout>
         <RadCartesianChart tkExampleTitle tkToggleNavButton>
-            <CategoricalAxis tkCartesianHorizontalAxis allowPan="false" allowZoom="true" majorTickInterval="20">
+            <CategoricalAxis tkCartesianHorizontalAxis allowPan="false" allowZoom="true" [majorTickInterval]="majorTickInterval">
             </CategoricalAxis>
             <LinearAxis tkCartesianVerticalAxis allowPan="false" allowZoom="true"></LinearAxis>
             <LineSeries tkCartesianSeries [items]="shearerLocationArray" categoryProperty="time"

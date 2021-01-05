@@ -14,6 +14,7 @@ export class OperatorComponent implements OnInit {
   public shearer: ShearerGraph;
   public date: Date = new Date();
 
+  public majorTickInterval = 20;
   constructor(private shearerService: ShearerService) { }
 
   ngOnInit(): void {
@@ -24,6 +25,9 @@ export class OperatorComponent implements OnInit {
       var count = 0;
       var lastItemInArray = this.shearerLocationArray.getItem(this.shearerLocationArray.length - 1);
 
+      if (location.globalIndex % this.shearerService.cycle === 0)
+        this.majorTickInterval += this.majorTickInterval;
+      
       if (this.shearerLocationArray.length > 0) {
         var diff = this.date.getTime() - location.dateObject.getTime();
         if (diff >= 3000)
@@ -32,17 +36,23 @@ export class OperatorComponent implements OnInit {
       }
       //received packet not in order
       if (count > 1) {
-        //temporarily set the not received points
-        // console.log("receiving position is " + location.shearerLocation + " and last item array position is " + lastItemInArray.position);
-        for (var i = lastItemInArray.globalIndex + 1; i < location.globalIndex; i++) {
-          this.shearer = new ShearerGraph(0, null, null, true, i);
-          // console.log("setting temp in index " + i);
-          this.shearerLocationArray.setItem(i, this.shearer);
+        var tempValue = lastItemInArray.location;
+        if (location.shearerLocation > lastItemInArray.location){
+          for (var i = lastItemInArray.globalIndex + 1; i < location.globalIndex; i++) {
+            this.shearer = new ShearerGraph(tempValue, null, null, true, i);
+            this.shearerLocationArray.setItem(i, this.shearer);
+            tempValue++;
+          }
+        }else{
+          for (var i = lastItemInArray.globalIndex + 1; i < location.globalIndex; i++) {
+            this.shearer = new ShearerGraph(tempValue, null, null, true, i);
+            this.shearerLocationArray.setItem(i, this.shearer);
+            tempValue--;
+          }
         }
       }
       //the delayed packet has arrived and we need to go back and set it subsequently
       if (count < 0) {
-        // console.log("Packet is resolved " + location.shearerLocation);
         var temp = this.shearerLocationArray.getItem(location.globalIndex);
         temp.location = location.shearerLocation;
         temp.dateObject = location.dateObject;
