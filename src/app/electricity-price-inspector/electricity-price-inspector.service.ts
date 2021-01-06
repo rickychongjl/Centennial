@@ -14,7 +14,7 @@ export class ElectricityPriceInspectorService {
   public electricitySpike$ = this.electricitySpikeSource.asObservable();
 
   public timer = 0;
-  public timeOutValue = 20;//600000 is 10 minutes
+  public timeOutValue = 30;//600000 is 10 minutes
 
   public spike = false;
 
@@ -28,7 +28,8 @@ export class ElectricityPriceInspectorService {
       if(this.timer === this.timeOutValue){
         this.electricitySpikeSource.next(true);
         this.spike = true;
-        this.spikeDuration = Math.floor(Math.random() * 5) + 1;
+        this.spikeDuration = (Math.floor(Math.random() * 15) + 1) * 1000;
+        console.log("spike duration is " + this.spikeDuration);
         // this.notify(
         //   "Electricity price spike",
         //   "Shearer should halt",
@@ -38,11 +39,9 @@ export class ElectricityPriceInspectorService {
           this.electricitySpikeSource.next(false);
           this.spike = false;
           this.timer = 0;
-        }, this.spikeDuration*1000);
+        }, this.spikeDuration);
       }
-      if(this.spike != true){
-        this.timer++;
-      } 
+      this.timer++;
     },1000);
   }
   public notify(title: string, message: string, okText: string) {

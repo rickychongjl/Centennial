@@ -10,9 +10,6 @@ export class ShearerService {
   public shearerLocationSource = new Subject<ShearerItem>();
   public shearerLocation$ = this.shearerLocationSource.asObservable();
 
-  public stopShearerSignalSource = new Subject<boolean>();
-  public stopShearerSignal$ = this.stopShearerSignalSource.asObservable();
-
   private shearerItem: ShearerItem;
 
   private index = 0;
@@ -32,23 +29,17 @@ export class ShearerService {
   private stopGate: string = "";
   private reachStopGate: boolean = false;
 
+  private priceSpikeEvent = true;
   private priceSpike = false;
   private timerStarted = false;
 
   constructor(private ElectricityPriceInspectorService: ElectricityPriceInspectorService) {
     var timer = setInterval(() => {
-      this.stopShearerSignal$.subscribe(stop => {
-        if (stop)
-          clearInterval(timer);
-      });
       this.ElectricityPriceInspectorService.electricitySpike$.subscribe(spike => {
         if(spike){
           this.stopGate = this.nearestGate();
-          if (this.stopGate === "tailGate"){
-            this.previousGate = "mainGate";
-          }else{
-            this.previousGate = "tailGate";
-          }
+          this.stopGate == "tailGate" ? this.previousGate = "mainGate" : this.previousGate = "tailGate";
+          this.priceSpikeEvent = true;
           this.priceSpike = true;
           console.log("in spike now, the nearest gate is " + this.stopGate);
         }else{
@@ -56,10 +47,11 @@ export class ShearerService {
           this.priceSpike = false;
         }
       });
-      if (!this.priceSpike && !this.timerStarted){
+      if (this.priceSpikeEvent && !this.priceSpike && !this.timerStarted){
         this.timerStarted = true;
         //start_timer for 2 mins
         setTimeout(() => {
+          this.priceSpikeEvent = false;
           this.timerStarted = false;
           this.reachStopGate = false;
           this.stopGate = "";
@@ -70,16 +62,17 @@ export class ShearerService {
           this.previousGate = "tailGate";
           this.outagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfOutages);
         } else if (this.position == this.mainGate) {
-          this.outagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfOutages);
           this.previousGate = "mainGate";
+          this.outagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfOutages);
         }
+
         if(!this.reachStopGate){
           this.shearerItem = new ShearerItem(this.position, this.index);
 
-          if (this.activeOutagesArray.length > 0 && this.activeOutagesArray[0].remainingOutageDuration === 0) {
-            this.shearerLocationSource.next(this.activeOutagesArray[0]);
-            this.activeOutagesArray.shift();
-          } else {
+          // if (this.activeOutagesArray.length > 0 && this.activeOutagesArray[0].remainingOutageDuration <= 0) {
+          //   this.shearerLocationSource.next(this.activeOutagesArray[0]);
+          //   this.activeOutagesArray.shift();
+          // } else {
             if (this.outagesPositionArray.includes(this.position)) {
               this.shearerItem.remainingOutageDuration = this.outageDuration;
               this.activeOutagesArray.push(this.shearerItem);
@@ -91,11 +84,11 @@ export class ShearerService {
             } else {
               this.position++;
             }
-            if (this.activeOutagesArray.length > 0) {
-              for (var i = 0; i < this.activeOutagesArray.length; i++) {
-                this.activeOutagesArray[i].remainingOutageDuration--;
-              }
-            }
+            // if (this.activeOutagesArray.length > 0) {
+            //   for (var i = 0; i < this.activeOutagesArray.length; i++) {
+            //     this.activeOutagesArray[i].remainingOutageDuration--;
+            //   }
+            // }
             this.index++;
             if (this.previousGate === this.stopGate) {
               this.reachStopGate = true;
@@ -103,7 +96,16 @@ export class ShearerService {
             } else {
               this.reachStopGate = false;
             }
-          }
+          // }
+        }
+      }
+      if (this.activeOutagesArray.length > 0) {
+        if (this.activeOutagesArray[0].remainingOutageDuration <= 0){
+          this.shearerLocationSource.next(this.activeOutagesArray[0]);
+          this.activeOutagesArray.shift();
+        }
+        for (var i = 0; i < this.activeOutagesArray.length; i++) {
+          this.activeOutagesArray[i].remainingOutageDuration--;
         }
       }
     }, 1000);
@@ -118,7 +120,6 @@ export class ShearerService {
       }
       randomOutageArray.push(randNumber);
     }
-
     return randomOutageArray;
   }
 
