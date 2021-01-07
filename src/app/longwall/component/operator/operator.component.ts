@@ -33,7 +33,6 @@ export class OperatorComponent implements OnInit {
       }
     });
     this.shearerService.shearerLocation$.subscribe(location => {
-
       this.date = new Date();
       var input_time = location.dateObject.getHours() + ":" + location.dateObject.getMinutes() + ":" + location.dateObject.getSeconds();
       var stale = false;
@@ -41,7 +40,7 @@ export class OperatorComponent implements OnInit {
       var lastItemInArray = this.shearerLocationArray.getItem(this.shearerLocationArray.length - 1);
 
       if (location.globalIndex % this.shearerService.cycle === 0){
-        this.majorTickInterval = this.majorTickInterval + 2;
+        this.majorTickInterval = this.majorTickInterval + 60;
       }
 
       if (this.shearerLocationArray.length > 0) {
