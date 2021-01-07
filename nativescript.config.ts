@@ -1,7 +1,7 @@
 import { NativeScriptConfig } from '@nativescript/core';
 
 export default {
-  id: 'org.nativescript.CentennialCodingTest',
+  id: 'org.nativescript.HelloWorld',
   appResourcesPath: 'App_Resources',
   android: {
     v8Flags: '--expose_gc',

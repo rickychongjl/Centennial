@@ -1,29 +1,25 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { ShearerItem } from './../../shearer/shared/models/shearer-item.model';
+import { ElectricityPriceInspectorService } from '../../electricity-price-inspector/electricity-price-inspector.service';
+import { ControlSystemInspectorService } from '../../shearer/shared/control-system-inspector.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShearerService {
-  /*this is longwall operator service which gets the information from the shearer,
-  which in this case, we will mock up the shearer */
-
   public shearerLocationSource = new Subject<ShearerItem>();
   public shearerLocation$ = this.shearerLocationSource.asObservable();
-
-  public stopShearerSignalSource = new Subject<boolean>();
-  public stopShearerSignal$ = this.stopShearerSignalSource.asObservable();
 
   private shearerItem: ShearerItem;
 
   private index = 0;
-  public cycle = 10;
+  public cycle = 100;
   public mainGate = 0;
-  public tailGate = this.cycle;
+  public tailGate = 100;
 
   public randomMaxRange = this.cycle;
-  public numberOfOutages = 1;
+  public numberOfOutages = 17;
 
   private position = 0;
   private outageDuration = 3;
@@ -31,61 +27,84 @@ export class ShearerService {
   private activeOutagesArray: Array<ShearerItem> = new Array<ShearerItem>();
 
   private previousGate: string = "";
-  /*we need to generate a random number generator to represent the position which we will mock data outage
-  and then we will have a temp to hold the location we want to hold on to. 
-  */
-  constructor() {
-    // for(var i=0; i<this.outagesPositionArray.length; i++){
-    //   console.log(this.outagesPositionArray[i]);
-    // }
-    // console.log("__________");
+  private stopGate: string = "";
+  private reachStopGate: boolean = false;
+
+  private expectedResumeOperationTime: string;
+  private priceSpikeEvent = false;
+  private priceSpike = false;
+  private timerStarted = false;
+
+  constructor(
+      private electricityPriceInspectorService: ElectricityPriceInspectorService,
+      private controlSystemInspectorService: ControlSystemInspectorService
+    ) {
     var timer = setInterval(() => {
-      this.stopShearerSignal$.subscribe(stop => {
-        if (stop)
-          clearInterval(timer);
+      this.electricityPriceInspectorService.electricitySpike$.subscribe(spike => {
+        if(spike){
+          this.stopGate = this.nearestGate();
+          this.stopGate == "tailGate" ? this.previousGate = "mainGate" : this.previousGate = "tailGate";
+          this.priceSpikeEvent = true;
+          this.priceSpike = true;
+          console.log("in spike now, the nearest gate is " + this.stopGate);
+        }else{
+          console.log("out of spike now ");
+          this.priceSpike = false;
+        }
       });
-      if (this.position == this.tailGate) {
-        this.previousGate = "tailGate";
-        this.outagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfOutages);
-      } else if (this.position == this.mainGate) {
-        this.outagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfOutages);
-        this.previousGate = "mainGate";
+      if (this.priceSpikeEvent && !this.priceSpike && !this.timerStarted){
+        this.timerStarted = true;
+        var now = new Date();
+        this.expectedResumeOperationTime = this.timeAdder(2, now, "minutes");
+        setTimeout(() => {
+          this.priceSpike ? this.priceSpikeEvent = true : this.priceSpikeEvent = false;
+          this.timerStarted = false;
+          this.reachStopGate = false;
+        }, 120000);
       }
-      this.shearerItem = new ShearerItem(this.position, this.index);
 
-      if (this.activeOutagesArray.length > 0 && this.activeOutagesArray[0].remainingOutageDuration === 0) {
-
-        // console.log("resolving " + this.activeOutagesArray[0].shearerLocation);
-        this.shearerLocationSource.next(this.activeOutagesArray[0]);
-        this.activeOutagesArray.shift();
-
-      } else {
-
+      if (!this.reachStopGate){
+        if (this.position == this.tailGate) {
+          this.previousGate = "tailGate";
+          this.outagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfOutages);
+        } else if (this.position == this.mainGate) {
+          this.previousGate = "mainGate";
+          this.outagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfOutages);
+        }
+        this.shearerItem = new ShearerItem(this.position, this.index);
         if (this.outagesPositionArray.includes(this.position)) {
-          //we set the outageDuration
           this.shearerItem.remainingOutageDuration = this.outageDuration;
           this.activeOutagesArray.push(this.shearerItem);
-
         } else {
-
-          // console.log("Sending " + this.shearerItem.shearerLocation);
-          this.shearerLocationSource.next(this.shearerItem);
-
+          // if(this.controlSystemInspectorService.getControlSystemStatus()){
+            this.shearerLocationSource.next(this.shearerItem);
+          // }
         }
-
         if (this.previousGate === "tailGate") {
           this.position--;
         } else {
           this.position++;
         }
-        if (this.activeOutagesArray.length > 0) {
-          for (var i = 0; i < this.activeOutagesArray.length; i++) {
-            this.activeOutagesArray[i].remainingOutageDuration--;
-          }
-        }
         this.index++;
+        if (this.previousGate === this.stopGate) {
+          this.reachStopGate = true;
+          this.stopGate = "";
+        } else {
+          this.reachStopGate = false;
+        }
       }
-    }, 1000);
+      if (this.activeOutagesArray.length > 0) {
+        if (this.activeOutagesArray[0].remainingOutageDuration <= 0){
+          // if (this.controlSystemInspectorService.getControlSystemStatus()) {
+            this.shearerLocationSource.next(this.activeOutagesArray[0]);
+          // }
+          this.activeOutagesArray.shift();
+        }
+        for (var i = 0; i < this.activeOutagesArray.length; i++) {
+          this.activeOutagesArray[i].remainingOutageDuration--;
+        }
+      }
+    }, 2000);
   }
 
   private randomArrayGenerator(maxRange: number, numberOfOutage: number): Array<number> {
@@ -97,7 +116,47 @@ export class ShearerService {
       }
       randomOutageArray.push(randNumber);
     }
+    return randomOutageArray;
+  }
 
-    return randomOutageArray.sort();
+  private nearestGate(): string{
+    var mainGateDiff = Math.abs(this.position - this.mainGate);
+    var tailGateDiff = Math.abs(this.position - this.tailGate);
+    if( mainGateDiff > tailGateDiff ){
+      return "tailGate";
+    }else{
+      return "mainGate";
+    }
+  }
+
+  private timeAdder(valueToAdd: number, dateTimeObject: Date, unit: string): string{
+    var hours = dateTimeObject.getHours();
+    var minutes = dateTimeObject.getMinutes();
+    var seconds = dateTimeObject.getSeconds();
+
+    if (unit == "seconds") {
+      seconds += valueToAdd;
+    } else if (unit == "minutes") {
+      minutes += valueToAdd;
+    } else if (unit == "hours") {
+      hours += valueToAdd;
+    }
+    return this.incrementTimeUnits(hours,minutes,seconds);
+  }
+  private incrementTimeUnits(hours: number, minutes: number, seconds: number): string{
+    var result = "";
+    if(seconds >= 60){
+      seconds = 0;
+      minutes += 1;
+    }else if(minutes >= 60){
+      minutes = 0;
+      hours += 1;
+    }else if(hours >= 24){
+      seconds = 0;
+      minutes = 0;
+      hours = 0;
+    }
+
+    return hours + ":" + minutes + ":" + seconds;
   }
 }
