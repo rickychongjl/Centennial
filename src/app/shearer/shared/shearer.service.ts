@@ -130,8 +130,6 @@ export class ShearerService {
   }
 
   private timeAdder(valueToAdd: number, dateTimeObject: Date, unit: string): string{
-    var now = new Date();
-    this.expectedResumeOperationTime = now.getHours() + ":" + now.getMinutes() + 2 + ":" + now.getSeconds();
     var hours = dateTimeObject.getHours();
     var minutes = dateTimeObject.getMinutes();
     var seconds = dateTimeObject.getSeconds();

@@ -6,8 +6,8 @@ import * as dialogs from "tns-core-modules/ui/dialogs";
   providedIn: 'root'
 })
 export class ElectricityPriceInspectorService {
-  public price = 0;
-  public threshold;
+  public electricityPrice = 30;
+  public electricityThreshold = 200;
   public spikeDuration;
 
   public electricitySpikeSource = new Subject<boolean>();
@@ -29,6 +29,11 @@ export class ElectricityPriceInspectorService {
           this.spike = false;
           this.timer = 0;
         }, this.spikeDuration);
+      }
+      if(this.spike){
+        this.electricityPrice = Math.floor(Math.random() * 30) + this.electricityThreshold;
+      }else{
+        this.electricityPrice = Math.floor(Math.random() * 30) + 30; 
       }
       this.timer++;
     },2000);
