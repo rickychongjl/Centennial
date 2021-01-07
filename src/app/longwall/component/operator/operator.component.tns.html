@@ -1,5 +1,7 @@
 <StackLayout>
-    <!-- <Label text="Electricity price is " class="warning"></Label> -->
+    <Label class="{{priceSpike ? 'warning h2' : 'normal h2'}}" text="Electricity price is : {{priceSpike ? 'spiking' : 'stable'}}"></Label>
+    <Label class="h3" textWrap="true" visibility="{{shearerService.timerStarted ? 'visible' : 'collapse'}}" 
+        text="Shearer will resume operation at {{shearerService.expectedResumeOperationTime}}"></Label>
     <GridLayout>
         <RadCartesianChart tkExampleTitle tkToggleNavButton>
             <CategoricalAxis tkCartesianHorizontalAxis allowPan="false" allowZoom="true" [majorTickInterval]="majorTickInterval">

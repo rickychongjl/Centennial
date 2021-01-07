@@ -21,16 +21,12 @@ export class OperatorComponent implements OnInit {
 
   constructor(
     private shearerService: ShearerService,
-    private ElectricityPriceInspectorService: ElectricityPriceInspectorService
+    private electricityPriceInspectorService: ElectricityPriceInspectorService
   ) { }
 
   ngOnInit(): void {
-    this.ElectricityPriceInspectorService.electricitySpike$.subscribe(spike => {
-      if(spike){
-        this.priceSpike = true;
-      }else{
-        this.priceSpike = false;
-      }
+    this.electricityPriceInspectorService.electricitySpike$.subscribe(spike => {
+      spike ? this.priceSpike = true : this.priceSpike = false;
     });
     this.shearerService.shearerLocation$.subscribe(location => {
       this.date = new Date();

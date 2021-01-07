@@ -30,6 +30,7 @@ export class ShearerService {
   private stopGate: string = "";
   private reachStopGate: boolean = false;
 
+  private expectedResumeOperationTime: string;
   private priceSpikeEvent = false;
   private priceSpike = false;
   private timerStarted = false;
@@ -53,12 +54,15 @@ export class ShearerService {
       });
       if (this.priceSpikeEvent && !this.priceSpike && !this.timerStarted){
         this.timerStarted = true;
+        var now = new Date();
+        this.expectedResumeOperationTime = this.timeAdder(2, now, "minutes");
         setTimeout(() => {
-          this.priceSpikeEvent = false;
+          this.priceSpike ? this.priceSpikeEvent = true : this.priceSpikeEvent = false;
           this.timerStarted = false;
           this.reachStopGate = false;
         }, 120000);
       }
+
       if (!this.reachStopGate){
         if (this.position == this.tailGate) {
           this.previousGate = "tailGate";
@@ -100,7 +104,7 @@ export class ShearerService {
           this.activeOutagesArray[i].remainingOutageDuration--;
         }
       }
-    }, 1000);
+    }, 2000);
   }
 
   private randomArrayGenerator(maxRange: number, numberOfOutage: number): Array<number> {
@@ -123,5 +127,38 @@ export class ShearerService {
     }else{
       return "mainGate";
     }
+  }
+
+  private timeAdder(valueToAdd: number, dateTimeObject: Date, unit: string): string{
+    var now = new Date();
+    this.expectedResumeOperationTime = now.getHours() + ":" + now.getMinutes() + 2 + ":" + now.getSeconds();
+    var hours = dateTimeObject.getHours();
+    var minutes = dateTimeObject.getMinutes();
+    var seconds = dateTimeObject.getSeconds();
+
+    if (unit == "seconds") {
+      seconds += valueToAdd;
+    } else if (unit == "minutes") {
+      minutes += valueToAdd;
+    } else if (unit == "hours") {
+      hours += valueToAdd;
+    }
+    return this.incrementTimeUnits(hours,minutes,seconds);
+  }
+  private incrementTimeUnits(hours: number, minutes: number, seconds: number): string{
+    var result = "";
+    if(seconds >= 60){
+      seconds = 0;
+      minutes += 1;
+    }else if(minutes >= 60){
+      minutes = 0;
+      hours += 1;
+    }else if(hours >= 24){
+      seconds = 0;
+      minutes = 0;
+      hours = 0;
+    }
+
+    return hours + ":" + minutes + ":" + seconds;
   }
 }

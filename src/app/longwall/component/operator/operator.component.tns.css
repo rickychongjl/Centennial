@@ -1,5 +1,15 @@
 /* Add mobile styles for the component here.  */
+.h2{
+    font-size: 30px;
+}
+
+.h3{
+    font-size: 15px;
+}
 .warning{
     color: red;
-    font-size: medium;
+}
+
+.normal{
+    color: green;
 }
