@@ -141,17 +141,13 @@ export class ShearerService {
     } else if (unit == "hours") {
       hours += valueToAdd;
     }
-    return this.incrementTimeUnits(hours,minutes,seconds);
-  }
-  private incrementTimeUnits(hours: number, minutes: number, seconds: number): string{
-    var result = "";
-    if(seconds >= 60){
+    if (seconds >= 60) {
       seconds = 0;
       minutes += 1;
-    }else if(minutes >= 60){
+    } else if (minutes >= 60) {
       minutes = 0;
       hours += 1;
-    }else if(hours >= 24){
+    } else if (hours >= 24) {
       seconds = 0;
       minutes = 0;
       hours = 0;
