@@ -46,9 +46,9 @@ export class ShearerService {
           this.stopGate == "tailGate" ? this.previousGate = "mainGate" : this.previousGate = "tailGate";
           this.priceSpikeEvent = true;
           this.priceSpike = true;
-          console.log("in spike now, the nearest gate is " + this.stopGate);
+          // console.log("in spike now, the nearest gate is " + this.stopGate);
         }else{
-          console.log("out of spike now ");
+          // console.log("out of spike now ");
           this.priceSpike = false;
         }
       });
@@ -76,9 +76,9 @@ export class ShearerService {
           this.shearerItem.remainingOutageDuration = this.outageDuration;
           this.activeOutagesArray.push(this.shearerItem);
         } else {
-          // if(this.controlSystemInspectorService.getControlSystemStatus()){
+          if(!this.controlSystemInspectorService.controlSystemDown){
             this.shearerLocationSource.next(this.shearerItem);
-          // }
+          }
         }
         if (this.previousGate === "tailGate") {
           this.position--;
@@ -95,9 +95,9 @@ export class ShearerService {
       }
       if (this.activeOutagesArray.length > 0) {
         if (this.activeOutagesArray[0].remainingOutageDuration <= 0){
-          // if (this.controlSystemInspectorService.getControlSystemStatus()) {
+          if (!this.controlSystemInspectorService.controlSystemDown) {
             this.shearerLocationSource.next(this.activeOutagesArray[0]);
-          // }
+          }
           this.activeOutagesArray.shift();
         }
         for (var i = 0; i < this.activeOutagesArray.length; i++) {
