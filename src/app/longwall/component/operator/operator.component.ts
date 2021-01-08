@@ -49,12 +49,14 @@ export class OperatorComponent implements OnInit {
       if (gap > 1) {
         var tempValue = lastItemInArray.location;
         if (location.shearerLocation > lastItemInArray.location){
+          tempValue++;
           for (var i = lastItemInArray.globalIndex + 1; i < location.globalIndex; i++) {
             this.shearer = new ShearerGraph(tempValue, null, null, true, i);
             this.shearerLocationArray.setItem(i, this.shearer);
             tempValue++;
           }
         }else{
+          tempValue--;
           for (var i = lastItemInArray.globalIndex + 1; i < location.globalIndex; i++) {
             this.shearer = new ShearerGraph(tempValue, null, null, true, i);
             this.shearerLocationArray.setItem(i, this.shearer);

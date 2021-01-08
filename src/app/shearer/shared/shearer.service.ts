@@ -46,9 +46,9 @@ export class ShearerService {
           this.stopGate == "tailGate" ? this.previousGate = "mainGate" : this.previousGate = "tailGate";
           this.priceSpikeEvent = true;
           this.priceSpike = true;
-          // console.log("in spike now, the nearest gate is " + this.stopGate);
+          console.log("in spike now, the nearest gate is " + this.stopGate);
         }else{
-          // console.log("out of spike now ");
+          console.log("out of spike now ");
           this.priceSpike = false;
         }
       });
