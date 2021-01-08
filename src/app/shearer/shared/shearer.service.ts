@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ShearerItem } from './../../shearer/shared/models/shearer-item.model';
 import { ElectricityPriceInspectorService } from '../../electricity-price-inspector/electricity-price-inspector.service';
-import { ControlSystemInspectorService } from '../../shearer/shared/control-system-inspector.service';
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +36,6 @@ export class ShearerService {
 
   constructor(
       private electricityPriceInspectorService: ElectricityPriceInspectorService,
-      private controlSystemInspectorService: ControlSystemInspectorService
     ) {
     var timer = setInterval(() => {
       this.electricityPriceInspectorService.electricitySpike$.subscribe(spike => {
@@ -76,9 +74,7 @@ export class ShearerService {
           this.shearerItem.remainingOutageDuration = this.outageDuration;
           this.activeOutagesArray.push(this.shearerItem);
         } else {
-          // if(this.controlSystemInspectorService.getControlSystemStatus()){
-            this.shearerLocationSource.next(this.shearerItem);
-          // }
+          this.shearerLocationSource.next(this.shearerItem);
         }
         if (this.previousGate === "tailGate") {
           this.position--;
@@ -95,9 +91,7 @@ export class ShearerService {
       }
       if (this.activeOutagesArray.length > 0) {
         if (this.activeOutagesArray[0].remainingOutageDuration <= 0){
-          // if (this.controlSystemInspectorService.getControlSystemStatus()) {
-            this.shearerLocationSource.next(this.activeOutagesArray[0]);
-          // }
+          this.shearerLocationSource.next(this.activeOutagesArray[0]);
           this.activeOutagesArray.shift();
         }
         for (var i = 0; i < this.activeOutagesArray.length; i++) {
