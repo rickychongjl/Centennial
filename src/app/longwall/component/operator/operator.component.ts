@@ -3,6 +3,7 @@ import { ObservableArray } from '@nativescript/core';
 import { ShearerGraph } from '../../../shearer/shared/models/shearer-graph.model';
 import { ShearerService } from '../../../shearer/shared/shearer.service';
 import { ElectricityPriceInspectorService } from '../../../electricity-price-inspector/electricity-price-inspector.service';
+import * as dialogs from "tns-core-modules/ui/dialogs";
 
 @Component({
   selector: 'ns-operator',
@@ -25,9 +26,6 @@ export class OperatorComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.electricityPriceInspectorService.electricitySpike$.subscribe(spike => {
-      spike ? this.priceSpike = true : this.priceSpike = false;
-    });
     this.shearerService.shearerLocation$.subscribe(location => {
       this.date = new Date();
       var input_time = location.dateObject.getHours() + ":" + location.dateObject.getMinutes() + ":" + location.dateObject.getSeconds();
@@ -49,12 +47,14 @@ export class OperatorComponent implements OnInit {
       if (gap > 1) {
         var tempValue = lastItemInArray.location;
         if (location.shearerLocation > lastItemInArray.location){
+          tempValue++;
           for (var i = lastItemInArray.globalIndex + 1; i < location.globalIndex; i++) {
             this.shearer = new ShearerGraph(tempValue, null, null, true, i);
             this.shearerLocationArray.setItem(i, this.shearer);
             tempValue++;
           }
         }else{
+          tempValue--;
           for (var i = lastItemInArray.globalIndex + 1; i < location.globalIndex; i++) {
             this.shearer = new ShearerGraph(tempValue, null, null, true, i);
             this.shearerLocationArray.setItem(i, this.shearer);
@@ -84,6 +84,14 @@ export class OperatorComponent implements OnInit {
         this.shearerLocationArray.setItem(location.globalIndex, this.shearer);
 
       }
+    });
+  }
+
+  private notify(title: string, message: string, okText: string) {
+    dialogs.alert({
+      title: title,
+      message: message,
+      okButtonText: okText
     });
   }
 }

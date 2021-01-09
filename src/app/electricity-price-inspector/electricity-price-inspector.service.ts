@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import * as dialogs from "tns-core-modules/ui/dialogs";
 
 @Injectable({
   providedIn: 'root'
@@ -37,12 +36,5 @@ export class ElectricityPriceInspectorService {
       }
       this.timer++;
     },2000);
-  }
-  public notify(title: string, message: string, okText: string) {
-    dialogs.alert({
-      title: title,
-      message: message,
-      okButtonText: okText
-    });
   }
 }

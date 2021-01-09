@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ShearerItem } from './../../shearer/shared/models/shearer-item.model';
 import { ElectricityPriceInspectorService } from '../../electricity-price-inspector/electricity-price-inspector.service';
-import { ControlSystemInspectorService } from '../../shearer/shared/control-system-inspector.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +18,7 @@ export class ShearerService {
   public tailGate = 100;
 
   public randomMaxRange = this.cycle;
-  public numberOfOutages = 17;
+  public numberOfOutages = 10;
 
   private position = 0;
   private outageDuration = 3;
@@ -27,22 +26,23 @@ export class ShearerService {
   private activeOutagesArray: Array<ShearerItem> = new Array<ShearerItem>();
 
   private previousGate: string = "";
-  private stopGate: string = "";
+  public stopGate: string = "";
+  public stopGatePlaceHolder: string = "";
   private reachStopGate: boolean = false;
 
-  private expectedResumeOperationTime: string;
+  public expectedResumeOperationTime: string;
   private priceSpikeEvent = false;
   private priceSpike = false;
   private timerStarted = false;
 
   constructor(
       private electricityPriceInspectorService: ElectricityPriceInspectorService,
-      private controlSystemInspectorService: ControlSystemInspectorService
     ) {
     var timer = setInterval(() => {
       this.electricityPriceInspectorService.electricitySpike$.subscribe(spike => {
         if(spike){
           this.stopGate = this.nearestGate();
+          this.stopGatePlaceHolder = this.stopGate;
           this.stopGate == "tailGate" ? this.previousGate = "mainGate" : this.previousGate = "tailGate";
           this.priceSpikeEvent = true;
           this.priceSpike = true;
@@ -76,9 +76,7 @@ export class ShearerService {
           this.shearerItem.remainingOutageDuration = this.outageDuration;
           this.activeOutagesArray.push(this.shearerItem);
         } else {
-          // if(this.controlSystemInspectorService.getControlSystemStatus()){
-            this.shearerLocationSource.next(this.shearerItem);
-          // }
+          this.shearerLocationSource.next(this.shearerItem);
         }
         if (this.previousGate === "tailGate") {
           this.position--;
@@ -95,9 +93,7 @@ export class ShearerService {
       }
       if (this.activeOutagesArray.length > 0) {
         if (this.activeOutagesArray[0].remainingOutageDuration <= 0){
-          // if (this.controlSystemInspectorService.getControlSystemStatus()) {
-            this.shearerLocationSource.next(this.activeOutagesArray[0]);
-          // }
+          this.shearerLocationSource.next(this.activeOutagesArray[0]);
           this.activeOutagesArray.shift();
         }
         for (var i = 0; i < this.activeOutagesArray.length; i++) {
@@ -141,17 +137,13 @@ export class ShearerService {
     } else if (unit == "hours") {
       hours += valueToAdd;
     }
-    return this.incrementTimeUnits(hours,minutes,seconds);
-  }
-  private incrementTimeUnits(hours: number, minutes: number, seconds: number): string{
-    var result = "";
-    if(seconds >= 60){
+    if (seconds >= 60) {
       seconds = 0;
       minutes += 1;
-    }else if(minutes >= 60){
+    } else if (minutes >= 60) {
       minutes = 0;
       hours += 1;
-    }else if(hours >= 24){
+    } else if (hours >= 24) {
       seconds = 0;
       minutes = 0;
       hours = 0;
