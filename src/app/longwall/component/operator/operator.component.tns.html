@@ -1,7 +1,7 @@
 <StackLayout>
     <Label class="{{electricityPriceInspectorService.spike ? 'warning h2' : 'normal h2'}}" text="Electricity price is : {{electricityPriceInspectorService.electricityPrice}}"></Label>
     <Label class="h3" textWrap="true" visibility="{{shearerService.priceSpike && !shearerService.timerStarted ? 'visible' : 'collapse'}}"
-        text="Electricity price has spiked, shearer will stop at {{shearerService.stopGatePlaceHolder}}"></Label>
+        text="Electricity price spiked, shearer will stop at {{shearerService.stopGatePlaceHolder}}"></Label>
     <Label class="h3" textWrap="true" visibility="{{shearerService.timerStarted ? 'visible' : 'collapse'}}" 
         text="Shearer will resume operation at {{shearerService.expectedResumeOperationTime}}"></Label>
     <GridLayout>
@@ -15,9 +15,6 @@
             <LineSeries tkCartesianSeries [items]="shearerLocationArray" categoryProperty="time"
                 valueProperty="staleLocation">
             </LineSeries>
-            <!-- <Palette tkCartesianPalette seriesName="staleLocations">
-                <PaletteEntry tkCartesianPaletteEntry strokeColor="#040000" strokeWidth="3"></PaletteEntry>
-            </Palette> -->
             <Trackball tkCartesianTrackball></Trackball>
         </RadCartesianChart>
     </GridLayout>
