@@ -18,7 +18,7 @@ export class ShearerService {
   public tailGate = 100;
 
   public randomMaxRange = this.cycle;
-  public numberOfOutages = 17;
+  public numberOfOutages = 10;
 
   private position = 0;
   private outageDuration = 3;
@@ -26,10 +26,11 @@ export class ShearerService {
   private activeOutagesArray: Array<ShearerItem> = new Array<ShearerItem>();
 
   private previousGate: string = "";
-  private stopGate: string = "";
+  public stopGate: string = "";
+  public stopGatePlaceHolder: string = "";
   private reachStopGate: boolean = false;
 
-  private expectedResumeOperationTime: string;
+  public expectedResumeOperationTime: string;
   private priceSpikeEvent = false;
   private priceSpike = false;
   private timerStarted = false;
@@ -41,6 +42,7 @@ export class ShearerService {
       this.electricityPriceInspectorService.electricitySpike$.subscribe(spike => {
         if(spike){
           this.stopGate = this.nearestGate();
+          this.stopGatePlaceHolder = this.stopGate;
           this.stopGate == "tailGate" ? this.previousGate = "mainGate" : this.previousGate = "tailGate";
           this.priceSpikeEvent = true;
           this.priceSpike = true;
