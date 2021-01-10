@@ -3,6 +3,9 @@ This is a mobile application for longwall operators to view real time updates of
 <br/><br/>
 Network conditions underground can be unstable so this app will let the longwall operator know that the received location data is stale or not. When the electricity price spikes, it will determine which is the closest gate for shearer to stop at and indicate to the user of this event. Once electricity price stabilises, shearer will resume operation two minutes later. 
 <br/>
+<h2>External links</h2>
+Thought process model: https://1drv.ms/u/s!AvaeW0_vt-YNhqJJBgumyU_hmhVdmQ?e=E7FQVs<br/>
+
 <h2>Specification</h2>
 <strong>Program Stack:</strong><br/>
 Angular with Nativescript. The specific versions are all listed in the root package.json file.<br/><br/>
