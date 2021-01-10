@@ -3,8 +3,6 @@ This is a mobile application for longwall operators to view real time updates of
 <br/><br/>
 Network conditions underground can be unstable so this app will let the longwall operator know that the received location data is stale or not. When the electricity price spikes, it will determine which is the closest gate for shearer to stop at and indicate to the user of this event. Once electricity price stabilises, shearer will resume operation two minutes later. 
 <br/>
-<h2>External links</h2>
-Thought process model: https://1drv.ms/u/s!AvaeW0_vt-YNhqJJBgumyU_hmhVdmQ?e=E7FQVs<br/>
 
 <h2>Specification</h2>
 <strong>Program Stack:</strong><br/>
@@ -28,4 +26,7 @@ Shearer service will generate random positions to simulate unstable network. The
 Shearer service subscribes to Electricity price inspector service to receive news of electricity spike. In case of electricity spike, shearer service will determine the closest gate to stop at in accordance to its current position. When it reaches the closes gate (stopGate), it will set a Boolean variable (reachStopGate) to lock the execution flow from executing any logic that is related to shearer moving. Once the price stabilises, it will start a timer for 2 minutes before setting the boolean variable (reachStopGate) to allow shearer start mining again.  <br/>
 
 <strong>(Electricity-price-inspector)</strong><br/>
-This is the service that will mock the real electricity price and also price spikes. The spike has been pre-set to happen every 10 minutes. There will be a setInterval function that will random the electricity price every 2 seconds. When 10 minutes is up, it will trigger a spike event and let all its subscribers know that there has been a spike. The spike duration is random and has a max range of 1 to 75 seconds. This spike duration will be used to set a timeout, where the callback function will be to let all its subscribers know that price has stabilised. 
+This is the service that will mock the real electricity price and also price spikes. The spike has been pre-set to happen every 10 minutes. There will be a setInterval function that will random the electricity price every 2 seconds. When 10 minutes is up, it will trigger a spike event and let all its subscribers know that there has been a spike. The spike duration is random and has a max range of 1 to 75 seconds. This spike duration will be used to set a timeout, where the callback function will be to let all its subscribers know that price has stabilised.</br>
+
+<h2>External links</h2>
+Thought process model: https://1drv.ms/u/s!AvaeW0_vt-YNhqJJBgumyU_hmhVdmQ?e=E7FQVs<br/>
