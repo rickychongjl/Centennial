@@ -3,7 +3,16 @@ This is a mobile application for longwall operators to view real time updates of
 <br/><br/>
 Network conditions underground can be unstable so this app will let the longwall operator know that the received location data is stale or not. When the electricity price spikes, it will determine which is the closest gate for shearer to stop at and indicate to the user of this event. Once electricity price stabilises, shearer will resume operation two minutes later. 
 <br/>
+<h2>Setting up</h2>
+To run this locally on your machine, you would need an emulator, XCode or/and Android Emulator, depending on your desired environment. You would also have to install Nativescript on your machine.<br/>
 
+A youtube video that shows step by step of setting up Nativescript, Emulators, and ultimately get a Nativescript running on your emulator
+https://www.youtube.com/watch?v=AT2GEwdJD0k<br/>
+
+Nativescript docs to set up Nativescript
+https://docs.nativescript.org/angular/start/quick-setup#full-setup<br/>
+
+I personally find the youtube video above to be easier to follow as it provides more insight into what each step means.<br/>
 <h2>Specification</h2>
 <strong>Program Stack:</strong><br/>
 Angular with Nativescript. The specific versions are all listed in the root package.json file.<br/><br/>
