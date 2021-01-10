@@ -18,12 +18,12 @@ export class ShearerService {
   public tailGate = 100;
 
   public randomMaxRange = this.cycle;
-  public numberOfOutages = 10;
+  public numberOfNetworkOutages = 10;
 
   private position = 0;
-  private outageDuration = 3;
-  private outagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfOutages);
-  private activeOutagesArray: Array<ShearerItem> = new Array<ShearerItem>();
+  private networkOutageDuration = 3;
+  private networkOutagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfNetworkOutages);
+  private activeNetowrkOutagesArray: Array<ShearerItem> = new Array<ShearerItem>();
 
   private previousGate: string = "";
   public stopGate: string = "";
@@ -66,15 +66,15 @@ export class ShearerService {
       if (!this.reachStopGate){
         if (this.position == this.tailGate) {
           this.previousGate = "tailGate";
-          this.outagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfOutages);
+          this.networkOutagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfNetworkOutages);
         } else if (this.position == this.mainGate) {
           this.previousGate = "mainGate";
-          this.outagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfOutages);
+          this.networkOutagesPositionArray = this.randomArrayGenerator(this.randomMaxRange, this.numberOfNetworkOutages);
         }
         this.shearerItem = new ShearerItem(this.position, this.index);
-        if (this.outagesPositionArray.includes(this.position)) {
-          this.shearerItem.remainingOutageDuration = this.outageDuration;
-          this.activeOutagesArray.push(this.shearerItem);
+        if (this.networkOutagesPositionArray.includes(this.position)) {
+          this.shearerItem.remainingOutageDuration = this.networkOutageDuration;
+          this.activeNetowrkOutagesArray.push(this.shearerItem);
         } else {
           this.shearerLocationSource.next(this.shearerItem);
         }
@@ -91,13 +91,13 @@ export class ShearerService {
           this.reachStopGate = false;
         }
       }
-      if (this.activeOutagesArray.length > 0) {
-        if (this.activeOutagesArray[0].remainingOutageDuration <= 0){
-          this.shearerLocationSource.next(this.activeOutagesArray[0]);
-          this.activeOutagesArray.shift();
+      if (this.activeNetowrkOutagesArray.length > 0) {
+        if (this.activeNetowrkOutagesArray[0].remainingOutageDuration <= 0){
+          this.shearerLocationSource.next(this.activeNetowrkOutagesArray[0]);
+          this.activeNetowrkOutagesArray.shift();
         }
-        for (var i = 0; i < this.activeOutagesArray.length; i++) {
-          this.activeOutagesArray[i].remainingOutageDuration--;
+        for (var i = 0; i < this.activeNetowrkOutagesArray.length; i++) {
+          this.activeNetowrkOutagesArray[i].remainingOutageDuration--;
         }
       }
     }, 2000);
